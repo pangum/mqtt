@@ -10,6 +10,5 @@ require (
 	google.golang.org/protobuf v1.27.1
 )
 
-replace github.com/storezhang/gox => ../gox
-
+// replace github.com/storezhang/gox => ../gox
 // replace github.com/storezhang/echox/v2 => ../../storezhang/echox

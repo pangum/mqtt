@@ -3,6 +3,8 @@ package mqtt
 import (
 	`encoding/json`
 	`encoding/xml`
+	`sync`
+	`time`
 
 	`github.com/eclipse/paho.mqtt.golang`
 	`github.com/vmihailenco/msgpack/v5`
@@ -13,10 +15,18 @@ import (
 type Client struct {
 	clientCache  map[string]mqtt.Client
 	optionsCache map[string]*mqtt.ClientOptions
+	brokersCache map[string][]string
+
+	mutex sync.Mutex
 }
 
-func (c *Client) Init(opts ...initOption) {
+func (c *Client) Brokers(opts ...brokersOption) []string {
+	options := defaultBrokersOptions()
+	for _, opt := range opts {
+		opt.applyBrokers(options)
+	}
 
+	return c.brokersCache[options.label]
 }
 
 func (c *Client) Publish(topic string, payload interface{}, opts ...publishOption) (err error) {
@@ -26,27 +36,30 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 	}
 
 	var client mqtt.Client
-	if client, err = c.getClient(options.options); nil != err {
+	if client, err = c.getClient(options.options.label); nil != err {
 		return
 	}
 
 	// 序列化数据
-	var bytes []byte
 	switch options.format {
-	case "proto":
-		bytes, err = proto.Marshal(payload.(proto.Message))
-	case "json":
-		bytes, err = json.Marshal(payload)
-	case "xml":
-		bytes, err = xml.Marshal(payload)
-	case "msgpack":
-		bytes, err = msgpack.Marshal(payload)
+	case formatProto:
+		payload, err = proto.Marshal(payload.(proto.Message))
+	case formatJson:
+		payload, err = json.Marshal(payload)
+	case formatXml:
+		payload, err = xml.Marshal(payload)
+	case formatMsgpack:
+		payload, err = msgpack.Marshal(payload)
+	case formatBytes:
+		payload = payload.([]byte)
+	case formatString:
+		payload = payload.(string)
 	}
 	if nil != err {
 		return
 	}
 
-	token := client.Publish(topic, options.qos, options.retained, bytes)
+	token := client.Publish(topic, byte(options.qos), options.retained, payload)
 	go func() {
 		<-token.Done()
 	}()
@@ -61,27 +74,52 @@ func (c *Client) Subscribe(topic string, handler handler, opts ...subscribeOptio
 	}
 
 	var client mqtt.Client
-	if client, err = c.getClient(options.options); nil != err {
+	if client, err = c.getClient(options.options.label); nil != err {
 		return
 	}
 
-	token := client.Subscribe(topic, options.qos, func(client mqtt.Client, message mqtt.Message) {
-		handler.OnMessage(&Message{Message: message})
+	token := client.Subscribe(topic, byte(options.qos), func(client mqtt.Client, message mqtt.Message) {
+		go c.consume(handler, client, message)
 	})
 	go func() {
-		<-token.Done()
+		token.Wait()
 	}()
 
 	return
 }
 
-func (c *Client) getClient(options *options) (client mqtt.Client, err error) {
+func (c *Client) Disconnect(duration time.Duration, opts ...option) (err error) {
+	options := defaultOptions()
+	for _, opt := range opts {
+		opt.apply(options)
+	}
+
+	var client mqtt.Client
+	if client, err = c.getClient(options.label); nil != err {
+		return
+	}
+	client.Disconnect(uint(duration / 1000))
+
+	return
+}
+
+func (c *Client) consume(handler handler, _ mqtt.Client, message mqtt.Message) {
+	if err := handler.OnMessage(&Message{Message: message}); nil == err {
+		message.Ack()
+	}
+}
+
+func (c *Client) getClient(label string) (client mqtt.Client, err error) {
 	var exist bool
-	if client, exist = c.clientCache[options.label]; exist {
+	if client, exist = c.clientCache[label]; exist {
 		return
 	}
 
-	client = mqtt.NewClient(c.optionsCache[options.label])
+	client = mqtt.NewClient(c.optionsCache[label])
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		err = token.Error()
+	}
+	c.clientCache[label] = client
 
 	return
 }

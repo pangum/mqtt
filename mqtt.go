@@ -14,50 +14,52 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 	mqttConfig := panguConfig.Mqtt
 
 	// 加载默认连接
+	brokersCache := make(map[string][]string)
 	optionsCache := make(map[string]*mqtt.ClientOptions)
-	if "" != mqttConfig.Broker || 0 != len(mqttConfig.Brokers) {
+	if 0 != len(mqttConfig.Brokers) {
 		defaultOptions := mqtt.NewClientOptions()
-		if "" != mqttConfig.Broker {
-			defaultOptions.AddBroker(mqttConfig.Broker)
-		} else {
-			for _, broker := range mqttConfig.Brokers {
-				defaultOptions.AddBroker(broker)
-			}
+		for _, broker := range mqttConfig.Brokers {
+			defaultOptions.AddBroker(broker)
 		}
 		defaultOptions.SetUsername(mqttConfig.Options.Username)
 		defaultOptions.SetPassword(mqttConfig.Options.Password)
 		defaultOptions.SetKeepAlive(mqttConfig.Options.Keepalive)
+		defaultOptions.SetClientID(mqttConfig.Options.ClientId)
+		if mqttConfig.Options.Will.Enabled {
+			defaultOptions.SetWill(
+				mqttConfig.Options.Will.Topic,
+				mqttConfig.Options.Will.Payload,
+				byte(mqttConfig.Options.Will.Qos),
+				mqttConfig.Options.Will.Retained,
+			)
+		}
 
 		optionsCache[defaultLabel] = defaultOptions
+		brokersCache[defaultLabel] = mqttConfig.Brokers
 	}
 
 	// 加载带标签的服务器
 	for _, server := range mqttConfig.Servers {
 		serverOptions := mqtt.NewClientOptions()
-		if "" != server.Broker {
-			serverOptions.AddBroker(mqttConfig.Broker)
-		} else {
-			for _, broker := range server.Brokers {
-				serverOptions.AddBroker(broker)
-			}
+		for _, broker := range server.Brokers {
+			serverOptions.AddBroker(broker)
 		}
-		if "" != server.Options.Username {
-			serverOptions.SetUsername(server.Options.Username)
-		} else {
-			serverOptions.SetUsername(mqttConfig.Options.Username)
-		}
-		if "" != server.Options.Password {
-			serverOptions.SetPassword(server.Options.Password)
-		} else {
-			serverOptions.SetPassword(mqttConfig.Options.Password)
-		}
-		if 0 != server.Options.Keepalive {
-			serverOptions.SetKeepAlive(server.Options.Keepalive)
-		} else {
-			serverOptions.SetKeepAlive(mqttConfig.Options.Keepalive)
+
+		setString(serverOptions.SetUsername, server.Options.Username, mqttConfig.Options.Username)
+		setString(serverOptions.SetPassword, server.Options.Password, mqttConfig.Options.Password)
+		setDuration(serverOptions.SetKeepAlive, server.Options.Keepalive, mqttConfig.Options.Keepalive)
+		setString(serverOptions.SetClientID, server.Options.ClientId, mqttConfig.Options.ClientId)
+		if server.Options.Will.Enabled {
+			serverOptions.SetWill(
+				server.Options.Will.Topic,
+				server.Options.Will.Payload,
+				byte(server.Options.Will.Qos),
+				server.Options.Will.Retained,
+			)
 		}
 
 		optionsCache[server.Label] = serverOptions
+		brokersCache[server.Label] = server.Brokers
 	}
 
 	client = &Client{
