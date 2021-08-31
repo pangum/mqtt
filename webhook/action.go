@@ -15,12 +15,20 @@ const (
 	ActionSessionTerminated Action = "session_terminated"
 	// ActionClientSubscribe 订阅主题，收到订阅报文后，执行client.check_acl鉴权前
 	ActionClientSubscribe Action = "client_subscribe"
+	// ActionClientSubscribed 订阅主题，收到订阅报文后，执行client.check_acl鉴权前
+	ActionClientSubscribed Action = "client_subscribed"
 	// ActionSessionSubscribe 订阅主题，收到订阅报文后，执行client.check_acl鉴权前
 	ActionSessionSubscribe Action = "session_subscribe"
+	// ActionSessionSubscribed 订阅主题，收到订阅报文后，执行client.check_acl鉴权前
+	ActionSessionSubscribed Action = "session_subscribed"
 	// ActionClientUnsubscribe 取消订阅，收到取消订阅报文后
 	ActionClientUnsubscribe Action = "client_unsubscribe"
+	// ActionClientUnsubscribed 取消订阅，收到取消订阅报文后
+	ActionClientUnsubscribed Action = "client_unsubscribed"
 	// ActionSessionUnsubscribe 取消订阅，收到取消订阅报文后
 	ActionSessionUnsubscribe Action = "session_unsubscribe"
+	// ActionSessionUnsubscribed 取消订阅，收到取消订阅报文后
+	ActionSessionUnsubscribed Action = "session_unsubscribed"
 	// ActionMessagePublish 消息发布，服务端在发布（路由）消息前
 	ActionMessagePublish Action = "message_publish"
 	// ActionMessageDelivered 消息投递，消息准备投递到客户端前
