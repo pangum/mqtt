@@ -16,17 +16,18 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 	// 加载默认连接
 	brokersCache := make(map[string][]string)
 	optionsCache := make(map[string]*mqtt.ClientOptions)
+	serializerCache := make(map[string]serializer)
 	if 0 != len(mqttConfig.Brokers) {
-		defaultOptions := mqtt.NewClientOptions()
+		_defaultOptions := mqtt.NewClientOptions()
 		for _, broker := range mqttConfig.Brokers {
-			defaultOptions.AddBroker(broker)
+			_defaultOptions.AddBroker(broker)
 		}
-		defaultOptions.SetUsername(mqttConfig.Options.Username)
-		defaultOptions.SetPassword(mqttConfig.Options.Password)
-		defaultOptions.SetKeepAlive(mqttConfig.Options.Keepalive)
-		defaultOptions.SetClientID(mqttConfig.Options.ClientId)
+		_defaultOptions.SetUsername(mqttConfig.Options.Username)
+		_defaultOptions.SetPassword(mqttConfig.Options.Password)
+		_defaultOptions.SetKeepAlive(mqttConfig.Options.Keepalive)
+		_defaultOptions.SetClientID(mqttConfig.Options.ClientId)
 		if mqttConfig.Options.Will.Enabled {
-			defaultOptions.SetWill(
+			_defaultOptions.SetWill(
 				mqttConfig.Options.Will.Topic,
 				mqttConfig.Options.Will.Payload,
 				byte(mqttConfig.Options.Will.Qos),
@@ -34,37 +35,41 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 			)
 		}
 
-		optionsCache[defaultLabel] = defaultOptions
+		optionsCache[defaultLabel] = _defaultOptions
 		brokersCache[defaultLabel] = mqttConfig.Brokers
+		serializerCache[defaultLabel] = mqttConfig.Options.Serializer
 	}
 
 	// 加载带标签的服务器
-	for _, server := range mqttConfig.Servers {
+	for _, _server := range mqttConfig.Servers {
 		serverOptions := mqtt.NewClientOptions()
-		for _, broker := range server.Brokers {
+		for _, broker := range _server.Brokers {
 			serverOptions.AddBroker(broker)
 		}
 
-		setString(serverOptions.SetUsername, server.Options.Username, mqttConfig.Options.Username)
-		setString(serverOptions.SetPassword, server.Options.Password, mqttConfig.Options.Password)
-		setDuration(serverOptions.SetKeepAlive, server.Options.Keepalive, mqttConfig.Options.Keepalive)
-		setString(serverOptions.SetClientID, server.Options.ClientId, mqttConfig.Options.ClientId)
-		if server.Options.Will.Enabled {
+		setString(serverOptions.SetUsername, _server.Options.Username, mqttConfig.Options.Username)
+		setString(serverOptions.SetPassword, _server.Options.Password, mqttConfig.Options.Password)
+		setDuration(serverOptions.SetKeepAlive, _server.Options.Keepalive, mqttConfig.Options.Keepalive)
+		setString(serverOptions.SetClientID, _server.Options.ClientId, mqttConfig.Options.ClientId)
+		if _server.Options.Will.Enabled {
 			serverOptions.SetWill(
-				server.Options.Will.Topic,
-				server.Options.Will.Payload,
-				byte(server.Options.Will.Qos),
-				server.Options.Will.Retained,
+				_server.Options.Will.Topic,
+				_server.Options.Will.Payload,
+				byte(_server.Options.Will.Qos),
+				_server.Options.Will.Retained,
 			)
 		}
 
-		optionsCache[server.Label] = serverOptions
-		brokersCache[server.Label] = server.Brokers
+		optionsCache[_server.Label] = serverOptions
+		brokersCache[_server.Label] = _server.Brokers
+		serializerCache[_server.Label] = _server.Options.Serializer
 	}
 
 	client = &Client{
-		clientCache:  make(map[string]mqtt.Client),
-		optionsCache: optionsCache,
+		clientCache:     make(map[string]mqtt.Client),
+		optionsCache:    optionsCache,
+		brokersCache:    brokersCache,
+		serializerCache: serializerCache,
 	}
 
 	return

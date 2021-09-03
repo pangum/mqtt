@@ -13,53 +13,55 @@ import (
 
 // Client MQTT客户端封装
 type Client struct {
-	clientCache  map[string]mqtt.Client
-	optionsCache map[string]*mqtt.ClientOptions
-	brokersCache map[string][]string
+	clientCache     map[string]mqtt.Client
+	optionsCache    map[string]*mqtt.ClientOptions
+	brokersCache    map[string][]string
+	serializerCache map[string]serializer
 
 	mutex sync.Mutex
 }
 
 func (c *Client) Brokers(opts ...brokersOption) []string {
-	options := defaultBrokersOptions()
+	_options := defaultBrokersOptions()
 	for _, opt := range opts {
-		opt.applyBrokers(options)
+		opt.applyBrokers(_options)
 	}
 
-	return c.brokersCache[options.label]
+	return c.brokersCache[_options.label]
 }
 
 func (c *Client) Publish(topic string, payload interface{}, opts ...publishOption) (err error) {
-	options := defaultPublishOptions()
+	_options := defaultPublishOptions()
 	for _, opt := range opts {
-		opt.applyPublish(options)
+		opt.applyPublish(_options)
 	}
 
 	var client mqtt.Client
-	if client, err = c.getClient(options.options.label); nil != err {
+	if client, err = c.getClient(_options.options.label); nil != err {
 		return
 	}
 
 	// 序列化数据
-	switch options.format {
-	case formatProto:
+	_serializer := c.getSerializer(_options.label, _options.serializer)
+	switch _serializer {
+	case serializerProto:
 		payload, err = proto.Marshal(payload.(proto.Message))
-	case formatJson:
+	case serializerJson:
 		payload, err = json.Marshal(payload)
-	case formatXml:
+	case serializerXml:
 		payload, err = xml.Marshal(payload)
-	case formatMsgpack:
+	case serializerMsgpack:
 		payload, err = msgpack.Marshal(payload)
-	case formatBytes:
+	case serializerBytes:
 		payload = payload.([]byte)
-	case formatString:
+	case serializerString:
 		payload = payload.(string)
 	}
 	if nil != err {
 		return
 	}
 
-	token := client.Publish(topic, byte(options.qos), options.retained, payload)
+	token := client.Publish(topic, byte(_options.qos), _options.retained, payload)
 	go func() {
 		<-token.Done()
 	}()
@@ -68,17 +70,17 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 }
 
 func (c *Client) Subscribe(topic string, handler handler, opts ...subscribeOption) (err error) {
-	options := defaultSubscribeOptions()
+	_options := defaultSubscribeOptions()
 	for _, opt := range opts {
-		opt.applySubscribe(options)
+		opt.applySubscribe(_options)
 	}
 
 	var client mqtt.Client
-	if client, err = c.getClient(options.options.label); nil != err {
+	if client, err = c.getClient(_options.options.label); nil != err {
 		return
 	}
 
-	token := client.Subscribe(topic, byte(options.qos), func(client mqtt.Client, message mqtt.Message) {
+	token := client.Subscribe(topic, byte(_options.qos), func(client mqtt.Client, message mqtt.Message) {
 		go c.consume(handler, client, message)
 	})
 	go func() {
@@ -89,13 +91,13 @@ func (c *Client) Subscribe(topic string, handler handler, opts ...subscribeOptio
 }
 
 func (c *Client) Disconnect(duration time.Duration, opts ...option) (err error) {
-	options := defaultOptions()
+	_options := defaultOptions()
 	for _, opt := range opts {
-		opt.apply(options)
+		opt.apply(_options)
 	}
 
 	var client mqtt.Client
-	if client, err = c.getClient(options.label); nil != err {
+	if client, err = c.getClient(_options.label); nil != err {
 		return
 	}
 	client.Disconnect(uint(duration / 1000))
@@ -120,6 +122,16 @@ func (c *Client) getClient(label string) (client mqtt.Client, err error) {
 		err = token.Error()
 	}
 	c.clientCache[label] = client
+
+	return
+}
+
+func (c *Client) getSerializer(label string, original serializer) (serializer serializer) {
+	if serializerUnknown == original {
+		serializer = c.serializerCache[label]
+	} else {
+		serializer = original
+	}
 
 	return
 }

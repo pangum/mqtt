@@ -1,53 +1,53 @@
 package mqtt
 
-var _ publishOption = (*publishOptionFormat)(nil)
+var _ publishOption = (*publishOptionSerializer)(nil)
 
-type publishOptionFormat struct {
-	format format
+type publishOptionSerializer struct {
+	serializer serializer
 }
 
 // Proto 谷歌Protocol Buffer序列化
-func Proto() *publishOptionFormat {
-	return &publishOptionFormat{
-		format: formatProto,
+func Proto() *publishOptionSerializer {
+	return &publishOptionSerializer{
+		serializer: serializerProto,
 	}
 }
 
 // JSON 使用JSON序列化
-func JSON() *publishOptionFormat {
-	return &publishOptionFormat{
-		format: formatJson,
+func JSON() *publishOptionSerializer {
+	return &publishOptionSerializer{
+		serializer: serializerJson,
 	}
 }
 
 // XML 使用XML序列化
-func XML() *publishOptionFormat {
-	return &publishOptionFormat{
-		format: formatXml,
+func XML() *publishOptionSerializer {
+	return &publishOptionSerializer{
+		serializer: serializerXml,
 	}
 }
 
 // Msgpack 使用Msgpack序列化
-func Msgpack() *publishOptionFormat {
-	return &publishOptionFormat{
-		format: formatMsgpack,
+func Msgpack() *publishOptionSerializer {
+	return &publishOptionSerializer{
+		serializer: serializerMsgpack,
 	}
 }
 
 // Bytes 原始数据
-func Bytes() *publishOptionFormat {
-	return &publishOptionFormat{
-		format: formatBytes,
+func Bytes() *publishOptionSerializer {
+	return &publishOptionSerializer{
+		serializer: serializerBytes,
 	}
 }
 
 // String 字符串数据
-func String() *publishOptionFormat {
-	return &publishOptionFormat{
-		format: formatString,
+func String() *publishOptionSerializer {
+	return &publishOptionSerializer{
+		serializer: serializerString,
 	}
 }
 
-func (f *publishOptionFormat) applyPublish(options *publishOptions) {
-	options.format = f.format
+func (f *publishOptionSerializer) applyPublish(options *publishOptions) {
+	options.serializer = f.serializer
 }

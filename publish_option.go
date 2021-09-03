@@ -12,9 +12,9 @@ type (
 	publishOptions struct {
 		*options
 
-		format   format
-		qos      core.Qos
-		retained bool
+		serializer serializer
+		qos        core.Qos
+		retained   bool
 	}
 )
 
@@ -22,8 +22,8 @@ func defaultPublishOptions() *publishOptions {
 	return &publishOptions{
 		options: defaultOptions(),
 
-		format:   "proto",
-		qos:      core.Qos1,
-		retained: false,
+		serializer: serializerUnknown,
+		qos:        core.Qos1,
+		retained:   false,
 	}
 }
