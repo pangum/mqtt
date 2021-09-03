@@ -1,4 +1,4 @@
-package core
+package verify
 
 const (
 	// AclTypeUnknown 未知

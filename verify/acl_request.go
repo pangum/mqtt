@@ -1,8 +1,8 @@
-package core
+package verify
 
 // AclRequest 请求
 type AclRequest struct {
-	VerifyRequest
+	Request
 
 	// 挂载点
 	MountPoint string `json:"mountPoint,omitempty" param:"mountPoint" query:"mountPoint"`

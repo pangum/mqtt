@@ -1,7 +1,7 @@
-package core
+package verify
 
-// VerifyRequest 请求
-type VerifyRequest struct {
+// Request 请求
+type Request struct {
 	// 用户名
 	Username string `json:"username" param:"username" query:"username"`
 	// 客户端编号

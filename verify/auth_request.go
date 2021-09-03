@@ -1,8 +1,8 @@
-package core
+package verify
 
 // AuthRequest 请求
 type AuthRequest struct {
-	VerifyRequest
+	Request
 
 	// 明文密码
 	Password string `json:"password" param:"password" query:"password"`
