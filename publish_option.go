@@ -1,6 +1,8 @@
 package mqtt
 
 import (
+	`time`
+
 	`github.com/storezhang/pangu-mqtt/core`
 )
 
@@ -15,6 +17,7 @@ type (
 		serializer serializer
 		qos        core.Qos
 		retained   bool
+		delay      time.Duration
 	}
 )
 

@@ -61,6 +61,9 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 		return
 	}
 
+	if 0 != _options.delay {
+		time.Sleep(_options.delay)
+	}
 	token := client.Publish(topic, byte(_options.qos), _options.retained, payload)
 	go func() {
 		<-token.Done()
