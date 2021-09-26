@@ -52,6 +52,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		_defaultOptions.SetWriteTimeout(mqttConfig.Options.Timeout.Write)
 		// 处理器
 		_defaultOptions.OnReconnecting = onReconnection(logger)
+		_defaultOptions.OnConnectionLost = onConnectionLost(logger)
 
 		optionsCache[defaultLabel] = _defaultOptions
 		brokersCache[defaultLabel] = mqttConfig.Brokers
@@ -91,6 +92,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		setDuration(serverOptions.SetWriteTimeout, _server.Options.Timeout.Write, mqttConfig.Options.Timeout.Write)
 		// 处理器
 		serverOptions.OnReconnecting = onReconnection(logger)
+		serverOptions.OnConnectionLost = onConnectionLost(logger)
 
 		optionsCache[_server.Label] = serverOptions
 		brokersCache[_server.Label] = _server.Brokers
@@ -105,6 +107,12 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 	}
 
 	return
+}
+
+func onConnectionLost(logger glog.Logger) func(mqtt.Client, error) {
+	return func(client mqtt.Client, err error) {
+		logger.Warn("MQTT掉线", field.Error(err))
+	}
 }
 
 func onReconnection(logger glog.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
