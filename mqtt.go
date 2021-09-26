@@ -1,11 +1,15 @@
 package mqtt
 
 import (
+	`net/url`
+
 	`github.com/eclipse/paho.mqtt.golang`
+	`github.com/storezhang/glog`
+	`github.com/storezhang/gox/field`
 	`github.com/storezhang/pangu`
 )
 
-func newMqtt(config *pangu.Config) (client *Client, err error) {
+func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err error) {
 	_config := new(panguConfig)
 	if err = config.Load(_config); nil != err {
 		return
@@ -46,6 +50,8 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 		_defaultOptions.SetPingTimeout(mqttConfig.Options.Timeout.Ping)
 		_defaultOptions.SetConnectTimeout(mqttConfig.Options.Timeout.Connect)
 		_defaultOptions.SetWriteTimeout(mqttConfig.Options.Timeout.Write)
+		// 处理器
+		_defaultOptions.OnReconnecting = onReconnection(logger)
 
 		optionsCache[defaultLabel] = _defaultOptions
 		brokersCache[defaultLabel] = mqttConfig.Brokers
@@ -83,6 +89,8 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 		setDuration(serverOptions.SetPingTimeout, _server.Options.Timeout.Ping, mqttConfig.Options.Timeout.Ping)
 		setDuration(serverOptions.SetConnectTimeout, _server.Options.Timeout.Connect, mqttConfig.Options.Timeout.Connect)
 		setDuration(serverOptions.SetWriteTimeout, _server.Options.Timeout.Write, mqttConfig.Options.Timeout.Write)
+		// 处理器
+		serverOptions.OnReconnecting = onReconnection(logger)
 
 		optionsCache[_server.Label] = serverOptions
 		brokersCache[_server.Label] = _server.Brokers
@@ -94,6 +102,25 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 		optionsCache:    optionsCache,
 		brokersCache:    brokersCache,
 		serializerCache: serializerCache,
+	}
+
+	return
+}
+
+func onReconnection(logger glog.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
+	return func(client mqtt.Client, options *mqtt.ClientOptions) {
+		logger.Warn(
+			"MQTT自动重连中...",
+			field.Strings("servers", servers(options.Servers)...),
+			field.String("username", options.Username),
+			field.String("clientid", options.ClientID),
+		)
+	}
+}
+
+func servers(urls []*url.URL) (servers []string) {
+	for _, _url := range urls {
+		servers = append(servers, _url.String())
 	}
 
 	return
