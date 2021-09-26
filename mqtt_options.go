@@ -14,7 +14,15 @@ type mqttOptions struct {
 	// 保活时间
 	Keepalive time.Duration `default:"20s" json:"keepalive" yaml:"keepalive" xml:"keepalive" toml:"keepalive"`
 	// 客户端编号
-	ClientId string `json:"clientId" yaml:"clientId" xml:"clientId" toml:"clientId"`
+	Clientid string `json:"clientid" yaml:"clientid" xml:"clientid" toml:"clientid"`
+	// 重连
+	Reconnect reconnect `json:"reconnect" yaml:"reconnect" xml:"reconnect" toml:"reconnect"`
+	// 会话
+	Session session `json:"session" yaml:"session" xml:"session" toml:"session"`
+	// 重试
+	Retry retry `json:"retry" yaml:"retry" xml:"retry" toml:"retry"`
+	// 超时
+	Timeout timeout `json:"timeout" yaml:"timeout" xml:"timeout" toml:"timeout"`
 	// 是否有序
 	Order bool `json:"order" yaml:"order" xml:"order" toml:"order"`
 	// 重连时是保留参数

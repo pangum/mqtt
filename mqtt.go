@@ -6,12 +6,12 @@ import (
 )
 
 func newMqtt(config *pangu.Config) (client *Client, err error) {
-	panguConfig := new(panguConfig)
-	if err = config.Load(panguConfig); nil != err {
+	_config := new(panguConfig)
+	if err = config.Load(_config); nil != err {
 		return
 	}
 
-	mqttConfig := panguConfig.Mqtt
+	mqttConfig := _config.Mqtt
 
 	// 加载默认连接
 	brokersCache := make(map[string][]string)
@@ -25,7 +25,7 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 		_defaultOptions.SetUsername(mqttConfig.Options.Username)
 		_defaultOptions.SetPassword(mqttConfig.Options.Password)
 		_defaultOptions.SetKeepAlive(mqttConfig.Options.Keepalive)
-		_defaultOptions.SetClientID(mqttConfig.Options.ClientId)
+		_defaultOptions.SetClientID(mqttConfig.Options.Clientid)
 		if mqttConfig.Options.Will.Enabled {
 			_defaultOptions.SetWill(
 				mqttConfig.Options.Will.Topic,
@@ -34,6 +34,18 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 				mqttConfig.Options.Will.Retained,
 			)
 		}
+		// 自动重连
+		_defaultOptions.SetAutoReconnect(mqttConfig.Options.Reconnect.Auto)
+		_defaultOptions.SetMaxReconnectInterval(mqttConfig.Options.Reconnect.Interval)
+		// 会话
+		_defaultOptions.SetCleanSession(mqttConfig.Options.Session.Clean)
+		// 重试
+		_defaultOptions.SetConnectRetry(mqttConfig.Options.Retry.Enable)
+		_defaultOptions.SetConnectRetryInterval(mqttConfig.Options.Retry.Interval)
+		// 超时
+		_defaultOptions.SetPingTimeout(mqttConfig.Options.Timeout.Ping)
+		_defaultOptions.SetConnectTimeout(mqttConfig.Options.Timeout.Connect)
+		_defaultOptions.SetWriteTimeout(mqttConfig.Options.Timeout.Write)
 
 		optionsCache[defaultLabel] = _defaultOptions
 		brokersCache[defaultLabel] = mqttConfig.Brokers
@@ -50,7 +62,7 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 		setString(serverOptions.SetUsername, _server.Options.Username, mqttConfig.Options.Username)
 		setString(serverOptions.SetPassword, _server.Options.Password, mqttConfig.Options.Password)
 		setDuration(serverOptions.SetKeepAlive, _server.Options.Keepalive, mqttConfig.Options.Keepalive)
-		setString(serverOptions.SetClientID, _server.Options.ClientId, mqttConfig.Options.ClientId)
+		setString(serverOptions.SetClientID, _server.Options.Clientid, mqttConfig.Options.Clientid)
 		if _server.Options.Will.Enabled {
 			serverOptions.SetWill(
 				_server.Options.Will.Topic,
@@ -59,6 +71,18 @@ func newMqtt(config *pangu.Config) (client *Client, err error) {
 				_server.Options.Will.Retained,
 			)
 		}
+		// 自动重连
+		serverOptions.SetAutoReconnect(_server.Options.Reconnect.Auto)
+		setDuration(serverOptions.SetMaxReconnectInterval, _server.Options.Reconnect.Interval, mqttConfig.Options.Reconnect.Interval)
+		// 会话
+		serverOptions.SetCleanSession(_server.Options.Session.Clean)
+		// 重试
+		serverOptions.SetConnectRetry(_server.Options.Retry.Enable)
+		serverOptions.SetConnectRetryInterval(_server.Options.Retry.Interval)
+		// 超时
+		setDuration(serverOptions.SetPingTimeout, _server.Options.Timeout.Ping, mqttConfig.Options.Timeout.Ping)
+		setDuration(serverOptions.SetConnectTimeout, _server.Options.Timeout.Connect, mqttConfig.Options.Timeout.Connect)
+		setDuration(serverOptions.SetWriteTimeout, _server.Options.Timeout.Write, mqttConfig.Options.Timeout.Write)
 
 		optionsCache[_server.Label] = serverOptions
 		brokersCache[_server.Label] = _server.Brokers
