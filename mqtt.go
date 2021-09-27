@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	`crypto/tls`
 	`net/url`
 
 	`github.com/eclipse/paho.mqtt.golang`
@@ -53,6 +54,8 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		// 处理器
 		_defaultOptions.OnReconnecting = onReconnection(logger)
 		_defaultOptions.OnConnectionLost = onConnectionLost(logger)
+		_defaultOptions.OnConnect = onConnect(logger)
+		_defaultOptions.OnConnectAttempt = onConnectAttempt(logger)
 
 		optionsCache[defaultLabel] = _defaultOptions
 		brokersCache[defaultLabel] = mqttConfig.Brokers
@@ -93,6 +96,8 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		// 处理器
 		serverOptions.OnReconnecting = onReconnection(logger)
 		serverOptions.OnConnectionLost = onConnectionLost(logger)
+		serverOptions.OnConnect = onConnect(logger)
+		serverOptions.OnConnectAttempt = onConnectAttempt(logger)
 
 		optionsCache[_server.Label] = serverOptions
 		brokersCache[_server.Label] = _server.Brokers
@@ -109,16 +114,42 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 	return
 }
 
+func onConnectAttempt(logger glog.Logger) func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
+	return func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
+		logger.Info("尝试连接MQTT服务器", field.Strings("server", broker.String()))
+
+		return tlsCfg
+	}
+}
+
+func onConnect(logger glog.Logger) func(mqtt.Client) {
+	return func(client mqtt.Client) {
+		_options := client.OptionsReader()
+		logger.Info(
+			"连接MQTT服务器",
+			field.Strings("servers", servers(_options.Servers())...),
+			field.String("username", _options.Username()),
+			field.String("clientid", _options.ClientID()),
+		)
+	}
+}
+
 func onConnectionLost(logger glog.Logger) func(mqtt.Client, error) {
 	return func(client mqtt.Client, err error) {
-		logger.Warn("MQTT掉线", field.Error(err))
+		_options := client.OptionsReader()
+		logger.Warn(
+			"MQTT掉线",
+			field.Strings("servers", servers(_options.Servers())...),
+			field.String("username", _options.Username()),
+			field.String("clientid", _options.ClientID()),
+			field.Error(err))
 	}
 }
 
 func onReconnection(logger glog.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
 	return func(client mqtt.Client, options *mqtt.ClientOptions) {
 		logger.Warn(
-			"MQTT自动重连中...",
+			"MQTT自动重连中",
 			field.Strings("servers", servers(options.Servers)...),
 			field.String("username", options.Username),
 			field.String("clientid", options.ClientID),
