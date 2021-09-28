@@ -8,7 +8,7 @@ type server struct {
 	// 地址列表（集群模式）
 	Brokers []string `json:"brokers" yaml:"brokers" xml:"brokers" toml:"brokers" validate:"required_without=Broker,dive,url"`
 	// Http接口
-	Http http `json:"http" yaml:"http" xml:"http" toml:"http"`
+	Http http `json:"http" yaml:"http" xml:"http" toml:"http" validate:"structonly"`
 	// 选项
 	Options mqttOptions `json:"options" yaml:"options" xml:"options" toml:"options"`
 }
