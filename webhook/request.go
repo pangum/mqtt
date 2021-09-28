@@ -5,7 +5,7 @@ type Request struct {
 	// 事件名称
 	Action Action `json:"action"`
 	// 客户端
-	ClientId string `json:"clientid"`
+	Clientid string `json:"clientid"`
 	// 客户端用户名，不存在时该值为 "undefined"
 	Username string `json:"username"`
 }

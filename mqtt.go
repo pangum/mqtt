@@ -22,6 +22,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 	brokersCache := make(map[string][]string)
 	optionsCache := make(map[string]*mqtt.ClientOptions)
 	serializerCache := make(map[string]serializer)
+	httpCache := make(map[string]http)
 	if 0 != len(mqttConfig.Brokers) {
 		_defaultOptions := mqtt.NewClientOptions()
 		for _, broker := range mqttConfig.Brokers {
@@ -60,6 +61,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		optionsCache[defaultLabel] = _defaultOptions
 		brokersCache[defaultLabel] = mqttConfig.Brokers
 		serializerCache[defaultLabel] = mqttConfig.Options.Serializer
+		httpCache[defaultLabel] = mqttConfig.Http
 	}
 
 	// 加载带标签的服务器
@@ -102,6 +104,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		optionsCache[_server.Label] = serverOptions
 		brokersCache[_server.Label] = _server.Brokers
 		serializerCache[_server.Label] = _server.Options.Serializer
+		httpCache[_server.Label] = _server.Http
 	}
 
 	client = &Client{
@@ -109,6 +112,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		optionsCache:    optionsCache,
 		brokersCache:    brokersCache,
 		serializerCache: serializerCache,
+		httpCache:       httpCache,
 	}
 
 	return
