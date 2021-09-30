@@ -3,6 +3,7 @@ package mqtt
 import (
 	`encoding/json`
 	`encoding/xml`
+	`fmt`
 	`time`
 
 	`github.com/eclipse/paho.mqtt.golang`
@@ -41,8 +42,9 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 		return
 	}
 
+	// 使用MQTT内置的延迟功能实现延迟发送
 	if 0 != _options.delay {
-		time.Sleep(_options.delay)
+		topic = fmt.Sprintf("$delayed/%d/%s", _options.delay/time.Second, topic)
 	}
 	token := client.Publish(topic, byte(_options.qos), _options.retained, payload)
 	go func() {
