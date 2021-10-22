@@ -130,7 +130,7 @@ func onConnect(logger glog.Logger) func(mqtt.Client) {
 	return func(client mqtt.Client) {
 		_options := client.OptionsReader()
 		logger.Info(
-			"连接MQTT服务器",
+			"连接MQTT服务器成功",
 			field.Strings("servers", servers(_options.Servers())...),
 			field.String("username", _options.Username()),
 			field.String("clientid", _options.ClientID()),
