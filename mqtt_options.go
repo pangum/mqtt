@@ -33,7 +33,7 @@ type mqttOptions struct {
 	Will will `json:"will" yaml:"will" xml:"will" toml:"will"`
 }
 
-func (o *mqttOptions) RealClientid() (clientid string) {
+func (o *mqttOptions) clientid() (clientid string) {
 	switch o.Clientid {
 	case `hostname`:
 		clientid, _ = os.Hostname()
