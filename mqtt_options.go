@@ -1,7 +1,11 @@
 package mqtt
 
 import (
+	`os`
 	`time`
+
+	`github.com/google/uuid`
+	`github.com/rs/xid`
 )
 
 type mqttOptions struct {
@@ -27,4 +31,19 @@ type mqttOptions struct {
 	Order bool `json:"order" yaml:"order" xml:"order" toml:"order"`
 	// 重连时是保留参数
 	Will will `json:"will" yaml:"will" xml:"will" toml:"will"`
+}
+
+func (o *mqttOptions) RealClientid() (clientid string) {
+	switch o.Clientid {
+	case `hostname`:
+		clientid, _ = os.Hostname()
+	case `uuid`:
+		clientid = uuid.NewString()
+	case `xid`:
+		clientid = xid.New().String()
+	default:
+		clientid = o.Clientid
+	}
+
+	return
 }

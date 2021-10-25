@@ -4,6 +4,8 @@ go 1.16
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.3.5
+	github.com/google/uuid v1.3.0
+	github.com/rs/xid v1.3.0
 	github.com/storezhang/glog v1.0.8
 	github.com/storezhang/gox v1.6.4
 	github.com/storezhang/pangu v1.3.9
