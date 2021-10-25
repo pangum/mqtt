@@ -19,15 +19,12 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 	mqttConfig := _config.Mqtt
 
 	// 加载默认连接
-	brokersCache := make(map[string][]string)
+	brokersCache := make(map[string]broker)
 	optionsCache := make(map[string]*mqtt.ClientOptions)
 	serializerCache := make(map[string]serializer)
-	httpCache := make(map[string]http)
-	if 0 != len(mqttConfig.Brokers) {
+	if mqttConfig.Broker.validate() {
 		_defaultOptions := mqtt.NewClientOptions()
-		for _, broker := range mqttConfig.Brokers {
-			_defaultOptions.AddBroker(broker)
-		}
+		_defaultOptions.AddBroker(mqttConfig.Broker.best())
 		_defaultOptions.SetUsername(mqttConfig.Options.Username)
 		_defaultOptions.SetPassword(mqttConfig.Options.Password)
 		_defaultOptions.SetKeepAlive(mqttConfig.Options.Keepalive)
@@ -59,18 +56,18 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		_defaultOptions.OnConnectAttempt = onConnectAttempt(logger)
 
 		optionsCache[defaultLabel] = _defaultOptions
-		brokersCache[defaultLabel] = mqttConfig.Brokers
+		brokersCache[defaultLabel] = mqttConfig.Broker
 		serializerCache[defaultLabel] = mqttConfig.Options.Serializer
-		httpCache[defaultLabel] = mqttConfig.Http
 	}
 
 	// 加载带标签的服务器
 	for _, _server := range mqttConfig.Servers {
-		serverOptions := mqtt.NewClientOptions()
-		for _, broker := range _server.Brokers {
-			serverOptions.AddBroker(broker)
+		if _server.Broker.validate() {
+			continue
 		}
 
+		serverOptions := mqtt.NewClientOptions()
+		serverOptions.AddBroker(_server.Broker.best())
 		setString(serverOptions.SetUsername, _server.Options.Username, mqttConfig.Options.Username)
 		setString(serverOptions.SetPassword, _server.Options.Password, mqttConfig.Options.Password)
 		setDuration(serverOptions.SetKeepAlive, _server.Options.Keepalive, mqttConfig.Options.Keepalive)
@@ -102,9 +99,8 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		serverOptions.OnConnectAttempt = onConnectAttempt(logger)
 
 		optionsCache[_server.Label] = serverOptions
-		brokersCache[_server.Label] = _server.Brokers
+		brokersCache[_server.Label] = _server.Broker
 		serializerCache[_server.Label] = _server.Options.Serializer
-		httpCache[_server.Label] = _server.Http
 	}
 
 	client = &Client{
@@ -112,7 +108,6 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		optionsCache:    optionsCache,
 		brokersCache:    brokersCache,
 		serializerCache: serializerCache,
-		httpCache:       httpCache,
 	}
 
 	return

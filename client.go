@@ -10,20 +10,19 @@ import (
 type Client struct {
 	clientCache     map[string]mqtt.Client
 	optionsCache    map[string]*mqtt.ClientOptions
-	brokersCache    map[string][]string
+	brokersCache    map[string]broker
 	serializerCache map[string]serializer
-	httpCache       map[string]http
 
 	mutex sync.Mutex
 }
 
-func (c *Client) Brokers(opts ...brokersOption) []string {
+func (c *Client) Urls(opts ...brokersOption) []string {
 	_options := defaultBrokersOptions()
 	for _, opt := range opts {
 		opt.applyBrokers(_options)
 	}
 
-	return c.brokersCache[_options.label]
+	return c.brokersCache[_options.label].urls()
 }
 
 func (c *Client) getClient(label string) (client mqtt.Client, err error) {
