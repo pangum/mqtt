@@ -12,7 +12,7 @@ type mqttOptions struct {
 	// 序列化器，默认使用Msgpack做序列化
 	Serializer serializer `default:"msgpack" json:"serializer" yaml:"serializer" xml:"serializer" toml:"serializer" validate:"oneof=json msgpack proto xml"`
 	// 保活时间
-	Keepalive time.Duration `default:"20s" json:"keepalive" yaml:"keepalive" xml:"keepalive" toml:"keepalive"`
+	Keepalive time.Duration `default:"60s" json:"keepalive" yaml:"keepalive" xml:"keepalive" toml:"keepalive"`
 	// 客户端编号
 	Clientid string `json:"clientid" yaml:"clientid" xml:"clientid" toml:"clientid"`
 	// 重连
