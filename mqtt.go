@@ -115,7 +115,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 
 func onConnectAttempt(logger glog.Logger) func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
 	return func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
-		logger.Info("尝试连接MQTT服务器", field.Strings("server", broker.String()))
+		logger.Info(`尝试连接MQTT服务器`, field.Strings(`server`, broker.String()))
 
 		return tlsCfg
 	}
@@ -124,11 +124,17 @@ func onConnectAttempt(logger glog.Logger) func(broker *url.URL, tlsCfg *tls.Conf
 func onConnect(logger glog.Logger) func(mqtt.Client) {
 	return func(client mqtt.Client) {
 		_options := client.OptionsReader()
+		var msg string
+		if client.IsConnected() {
+			msg = `连接MQTT服务器成功`
+		} else {
+			msg = `连接MQTT服务器中`
+		}
 		logger.Info(
-			"连接MQTT服务器成功",
-			field.Strings("servers", servers(_options.Servers())...),
-			field.String("username", _options.Username()),
-			field.String("clientid", _options.ClientID()),
+			msg,
+			field.Strings(`servers`, servers(_options.Servers())...),
+			field.String(`username`, _options.Username()),
+			field.String(`clientid`, _options.ClientID()),
 		)
 	}
 }
@@ -137,10 +143,10 @@ func onConnectionLost(logger glog.Logger) func(mqtt.Client, error) {
 	return func(client mqtt.Client, err error) {
 		_options := client.OptionsReader()
 		logger.Warn(
-			"MQTT掉线",
-			field.Strings("servers", servers(_options.Servers())...),
-			field.String("username", _options.Username()),
-			field.String("clientid", _options.ClientID()),
+			`MQTT掉线`,
+			field.Strings(`servers`, servers(_options.Servers())...),
+			field.String(`username`, _options.Username()),
+			field.String(`clientid`, _options.ClientID()),
 			field.Error(err))
 	}
 }
@@ -148,10 +154,10 @@ func onConnectionLost(logger glog.Logger) func(mqtt.Client, error) {
 func onReconnection(logger glog.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
 	return func(client mqtt.Client, options *mqtt.ClientOptions) {
 		logger.Warn(
-			"MQTT自动重连中",
-			field.Strings("servers", servers(options.Servers)...),
-			field.String("username", options.Username),
-			field.String("clientid", options.ClientID),
+			`MQTT自动重连中`,
+			field.Strings(`servers`, servers(options.Servers)...),
+			field.String(`username`, options.Username),
+			field.String(`clientid`, options.ClientID),
 		)
 	}
 }
