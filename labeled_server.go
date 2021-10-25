@@ -1,6 +1,6 @@
 package mqtt
 
-type server struct {
+type labeledServer struct {
 	// 标签，后续
 	Label string `json:"label" yaml:"label" xml:"label" toml:"label" validate:"required"`
 	// 地址

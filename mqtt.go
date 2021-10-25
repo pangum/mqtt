@@ -19,7 +19,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 	mqttConfig := _config.Mqtt
 
 	// 加载默认连接
-	brokersCache := make(map[string]broker)
+	brokerCache := make(map[string]broker)
 	optionsCache := make(map[string]*mqtt.ClientOptions)
 	serializerCache := make(map[string]serializer)
 	if mqttConfig.Broker.validate() {
@@ -56,12 +56,12 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		_defaultOptions.OnConnectAttempt = onConnectAttempt(logger)
 
 		optionsCache[defaultLabel] = _defaultOptions
-		brokersCache[defaultLabel] = mqttConfig.Broker
+		brokerCache[defaultLabel] = mqttConfig.Broker
 		serializerCache[defaultLabel] = mqttConfig.Options.Serializer
 	}
 
 	// 加载带标签的服务器
-	for _, _server := range mqttConfig.Servers {
+	for _, _server := range mqttConfig.Brokers {
 		if _server.Broker.validate() {
 			continue
 		}
@@ -99,14 +99,14 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		serverOptions.OnConnectAttempt = onConnectAttempt(logger)
 
 		optionsCache[_server.Label] = serverOptions
-		brokersCache[_server.Label] = _server.Broker
+		brokerCache[_server.Label] = _server.Broker
 		serializerCache[_server.Label] = _server.Options.Serializer
 	}
 
 	client = &Client{
 		clientCache:     make(map[string]mqtt.Client),
 		optionsCache:    optionsCache,
-		brokersCache:    brokersCache,
+		brokerCache:     brokerCache,
 		serializerCache: serializerCache,
 	}
 
@@ -115,7 +115,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 
 func onConnectAttempt(logger glog.Logger) func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
 	return func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
-		logger.Info(`尝试连接MQTT服务器`, field.Strings(`server`, broker.String()))
+		logger.Info(`尝试连接MQTT服务器`, field.Strings(`labeledServer`, broker.String()))
 
 		return tlsCfg
 	}
@@ -132,7 +132,7 @@ func onConnect(logger glog.Logger) func(mqtt.Client) {
 		}
 		logger.Info(
 			msg,
-			field.Strings(`servers`, servers(_options.Servers())...),
+			field.Strings(`urls`, servers(_options.Servers())...),
 			field.String(`username`, _options.Username()),
 			field.String(`clientid`, _options.ClientID()),
 		)
@@ -144,7 +144,7 @@ func onConnectionLost(logger glog.Logger) func(mqtt.Client, error) {
 		_options := client.OptionsReader()
 		logger.Warn(
 			`MQTT掉线`,
-			field.Strings(`servers`, servers(_options.Servers())...),
+			field.Strings(`urls`, servers(_options.Servers())...),
 			field.String(`username`, _options.Username()),
 			field.String(`clientid`, _options.ClientID()),
 			field.Error(err))
@@ -155,7 +155,7 @@ func onReconnection(logger glog.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
 	return func(client mqtt.Client, options *mqtt.ClientOptions) {
 		logger.Warn(
 			`MQTT自动重连中`,
-			field.Strings(`servers`, servers(options.Servers)...),
+			field.Strings(`urls`, servers(options.Servers)...),
 			field.String(`username`, options.Username),
 			field.String(`clientid`, options.ClientID),
 		)

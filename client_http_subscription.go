@@ -6,5 +6,5 @@ func (c *Client) Subscription(opts ...brokersOption) []string {
 		opt.applyBrokers(_options)
 	}
 
-	return c.brokersCache[_options.label].urls()
+	return c.brokerCache[_options.label].urls()
 }
