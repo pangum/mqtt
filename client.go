@@ -12,8 +12,23 @@ type Client struct {
 	optionsCache    map[string]*mqtt.ClientOptions
 	brokerCache     map[string]broker
 	serializerCache map[string]serializer
+	subscriptions   []subscription
 
 	mutex sync.Mutex
+}
+
+func newClient(
+	optionsCache map[string]*mqtt.ClientOptions,
+	brokerCache map[string]broker,
+	serializerCache map[string]serializer,
+) *Client {
+	return &Client{
+		clientCache:     make(map[string]mqtt.Client),
+		optionsCache:    optionsCache,
+		brokerCache:     brokerCache,
+		serializerCache: serializerCache,
+		subscriptions:   make([]subscription, 0),
+	}
 }
 
 func (c *Client) Urls(opts ...brokersOption) []string {

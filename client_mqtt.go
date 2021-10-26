@@ -72,6 +72,32 @@ func (c *Client) Subscribe(topic string, handler handler, opts ...subscribeOptio
 		token.Wait()
 	}()
 
+	// 存储订阅关系
+	if !_options.save {
+		return
+	}
+	c.subscriptions = append(c.subscriptions, subscription{
+		topic:   topic,
+		handler: handler,
+		options: opts,
+	})
+
+	return
+}
+
+func (c *Client) Resubscribe() (successes []string, fails []string, err error) {
+	successes = make([]string, 0)
+	fails = make([]string, 0)
+
+	for _, _subscription := range c.subscriptions {
+		_subscription.options = append(_subscription.options, NotSave())
+		if err = c.Subscribe(_subscription.topic, _subscription.handler, _subscription.options...); nil != err {
+			fails = append(fails, _subscription.topic)
+		} else {
+			successes = append(successes, _subscription.topic)
+		}
+	}
+
 	return
 }
 

@@ -11,6 +11,10 @@ import (
 )
 
 func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err error) {
+	getClient := func() *Client {
+		return client
+	}
+
 	_config := new(panguConfig)
 	if err = config.Load(_config); nil != err {
 		return
@@ -40,6 +44,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		// 自动重连
 		_defaultOptions.SetAutoReconnect(mqttConfig.Options.Reconnect.Auto)
 		_defaultOptions.SetMaxReconnectInterval(mqttConfig.Options.Reconnect.Interval)
+		_defaultOptions.SetResumeSubs(mqttConfig.Options.Reconnect.Resume)
 		// 会话
 		_defaultOptions.SetCleanSession(mqttConfig.Options.Session.Clean)
 		// 重试
@@ -50,7 +55,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		_defaultOptions.SetConnectTimeout(mqttConfig.Options.Timeout.Connect)
 		_defaultOptions.SetWriteTimeout(mqttConfig.Options.Timeout.Write)
 		// 处理器
-		_defaultOptions.OnReconnecting = onReconnection(logger)
+		_defaultOptions.OnReconnecting = onReconnection(getClient, logger)
 		_defaultOptions.OnConnectionLost = onConnectionLost(logger)
 		_defaultOptions.OnConnect = onConnect(logger)
 		_defaultOptions.OnConnectAttempt = onConnectAttempt(logger)
@@ -83,6 +88,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		// 自动重连
 		serverOptions.SetAutoReconnect(_server.Options.Reconnect.Auto)
 		setDuration(serverOptions.SetMaxReconnectInterval, _server.Options.Reconnect.Interval, mqttConfig.Options.Reconnect.Interval)
+		serverOptions.SetResumeSubs(_server.Options.Reconnect.Resume)
 		// 会话
 		serverOptions.SetCleanSession(_server.Options.Session.Clean)
 		// 重试
@@ -93,7 +99,7 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		setDuration(serverOptions.SetConnectTimeout, _server.Options.Timeout.Connect, mqttConfig.Options.Timeout.Connect)
 		setDuration(serverOptions.SetWriteTimeout, _server.Options.Timeout.Write, mqttConfig.Options.Timeout.Write)
 		// 处理器
-		serverOptions.OnReconnecting = onReconnection(logger)
+		serverOptions.OnReconnecting = onReconnection(getClient, logger)
 		serverOptions.OnConnectionLost = onConnectionLost(logger)
 		serverOptions.OnConnect = onConnect(logger)
 		serverOptions.OnConnectAttempt = onConnectAttempt(logger)
@@ -102,20 +108,14 @@ func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err erro
 		brokerCache[_server.Label] = _server.Broker
 		serializerCache[_server.Label] = _server.Options.Serializer
 	}
-
-	client = &Client{
-		clientCache:     make(map[string]mqtt.Client),
-		optionsCache:    optionsCache,
-		brokerCache:     brokerCache,
-		serializerCache: serializerCache,
-	}
+	client = newClient(optionsCache, brokerCache, serializerCache)
 
 	return
 }
 
 func onConnectAttempt(logger glog.Logger) func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
 	return func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
-		logger.Info(`尝试连接MQTT服务器`, field.Strings(`labeledServer`, broker.String()))
+		logger.Info(`尝试连接MQTT服务器`, field.Strings(`server`, broker.String()))
 
 		return tlsCfg
 	}
@@ -130,6 +130,7 @@ func onConnect(logger glog.Logger) func(mqtt.Client) {
 		} else {
 			msg = `连接MQTT服务器中`
 		}
+
 		logger.Info(
 			msg,
 			field.Strings(`urls`, servers(_options.Servers())...),
@@ -151,13 +152,30 @@ func onConnectionLost(logger glog.Logger) func(mqtt.Client, error) {
 	}
 }
 
-func onReconnection(logger glog.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
-	return func(client mqtt.Client, options *mqtt.ClientOptions) {
+func onReconnection(fun func() *Client, logger glog.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
+	return func(mqtt mqtt.Client, options *mqtt.ClientOptions) {
 		logger.Warn(
 			`MQTT自动重连中`,
 			field.Strings(`urls`, servers(options.Servers)...),
 			field.String(`username`, options.Username),
 			field.String(`clientid`, options.ClientID),
+			field.Bool(`resume`, options.ResumeSubs),
+		)
+
+		if !options.ResumeSubs {
+			return
+		}
+
+		client := fun()
+		if nil == client {
+			return
+		}
+
+		successes, fails, err := client.Resubscribe()
+		logger.Info(
+			`恢复订阅关系`,
+			field.Strings(`successes`, successes...), field.Strings(`fails`, fails...),
+			field.Error(err),
 		)
 	}
 }
