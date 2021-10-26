@@ -13,7 +13,7 @@ type broker struct {
 	// Websocket端口
 	Wss int `json:"wss" yaml:"wss" xml:"wss" toml:"wss" validate:"required_without_all=Ws Mqtt Mqtts"`
 	// 连接路径
-	Path string `json:"path" yaml:"path" xml:"path" toml:"path"`
+	Path string `default:"mqtt" json:"path" yaml:"path" xml:"path" toml:"path"`
 	// Mqtt端口
 	Mqtt int `json:"mqtt" yaml:"mqtt" xml:"mqtt" toml:"mqtt" validate:"required_without_all=Ws Wss Mqtts"`
 	// Mqtt SSL端口
