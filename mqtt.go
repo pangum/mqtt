@@ -6,6 +6,7 @@ import (
 
 	`github.com/eclipse/paho.mqtt.golang`
 	`github.com/storezhang/glog`
+	`github.com/storezhang/gox`
 	`github.com/storezhang/gox/field`
 	`github.com/storezhang/pangu`
 )
@@ -172,11 +173,14 @@ func onReconnection(fun func() *Client, logger glog.Logger) func(mqtt.Client, *m
 		}
 
 		successes, fails, err := client.Resubscribe()
-		logger.Info(
-			`恢复订阅关系`,
-			field.Strings(`successes`, successes...), field.Strings(`fails`, fails...),
-			field.Error(err),
-		)
+		fields := []gox.Field{
+			field.Strings(`successes`, successes...),
+			field.Strings(`fails`, fails...),
+		}
+		if nil != err {
+			fields = append(fields, field.Error(err))
+		}
+		logger.Info(`恢复订阅关系`, fields...)
 	}
 }
 
