@@ -6,7 +6,7 @@ import (
 
 type broker struct {
 	// 域名
-	Domain string `json:"domain" yaml:"domain" xml:"domain" toml:"domain" validate:"required,hostname"`
+	Domain string `json:"domain" yaml:"domain" xml:"domain" toml:"domain" validate:"required,hostname|ip"`
 
 	// Websocket端口
 	Ws int `json:"ws" yaml:"ws" xml:"ws" toml:"ws" validate:"required_without_all=Wss Mqtt Mqtts"`
@@ -47,30 +47,39 @@ func (b broker) urls() (urls []string) {
 func (b *broker) best() (addr string) {
 	var _protocol protocol
 	var port int
+	var websocket bool
 	defer func() {
-		addr = fmt.Sprintf(connectionFormatter, _protocol, b.Domain, port)
+		if websocket {
+			addr = fmt.Sprintf(`%s/%s`, fmt.Sprintf(connectionFormatter, _protocol, b.Domain, port), b.Path)
+		} else {
+			addr = fmt.Sprintf(connectionFormatter, _protocol, b.Domain, port)
+		}
 	}()
 
 	_protocol = protocolMqtts
 	port = b.Mqtts
+	websocket = false
 	if 0 != port {
 		return
 	}
 
 	_protocol = protocolMqtt
 	port = b.Mqtt
+	websocket = false
 	if 0 != port {
 		return
 	}
 
 	_protocol = protocolWss
 	port = b.Wss
+	websocket = true
 	if 0 != port {
 		return
 	}
 
 	_protocol = protocolWs
 	port = b.Ws
+	websocket = true
 	if 0 != port {
 		return
 	}
