@@ -2,7 +2,7 @@ package mqtt
 
 const (
 	protocolMqtts protocol = "mqtts"
-	protocolMqtt  protocol = "mqtt"
+	protocolMqtt  protocol = "tcp"
 	protocolWss   protocol = "wss"
 	protocolWs    protocol = "ws"
 )
