@@ -10,7 +10,6 @@ require (
 	github.com/rs/xid v1.3.0
 	github.com/storezhang/gox v1.7.9
 	github.com/vmihailenco/msgpack/v5 v5.3.4
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
 	google.golang.org/protobuf v1.27.1
 )
 
