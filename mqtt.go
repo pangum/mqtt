@@ -4,8 +4,6 @@ import (
 	`crypto/tls`
 	`net/url`
 
-	`github.com/eclipse/paho.mqtt.golang`
-	`github.com/storezhang/glog`
 	`github.com/storezhang/gox`
 	`github.com/storezhang/gox/field`
 	`github.com/storezhang/pangu`
