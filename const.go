@@ -1,3 +1,3 @@
 package mqtt
 
-const defaultLabel = "default"
+const defaultLabel = `default`
