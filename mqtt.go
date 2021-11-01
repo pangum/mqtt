@@ -5,13 +5,13 @@ import (
 	`net/url`
 
 	`github.com/eclipse/paho.mqtt.golang`
+	`github.com/pangum/logging`
 	`github.com/pangum/pangu`
 	`github.com/storezhang/gox`
 	`github.com/storezhang/gox/field`
-	`github.com/storezhang/simaqian`
 )
 
-func newMqtt(config *pangu.Config, logger simaqian.Logger) (client *Client, err error) {
+func newMqtt(config *pangu.Config, logger logging.Logger) (client *Client, err error) {
 	getClient := func() *Client {
 		return client
 	}
@@ -114,7 +114,7 @@ func newMqtt(config *pangu.Config, logger simaqian.Logger) (client *Client, err 
 	return
 }
 
-func onConnectAttempt(logger simaqian.Logger) func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
+func onConnectAttempt(logger logging.Logger) func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
 	return func(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
 		logger.Info(`尝试连接MQTT服务器`, field.Strings(`server`, broker.String()))
 
@@ -122,7 +122,7 @@ func onConnectAttempt(logger simaqian.Logger) func(broker *url.URL, tlsCfg *tls.
 	}
 }
 
-func onConnect(logger simaqian.Logger) func(mqtt.Client) {
+func onConnect(logger logging.Logger) func(mqtt.Client) {
 	return func(client mqtt.Client) {
 		_options := client.OptionsReader()
 		var msg string
@@ -141,7 +141,7 @@ func onConnect(logger simaqian.Logger) func(mqtt.Client) {
 	}
 }
 
-func onConnectionLost(logger simaqian.Logger) func(mqtt.Client, error) {
+func onConnectionLost(logger logging.Logger) func(mqtt.Client, error) {
 	return func(client mqtt.Client, err error) {
 		_options := client.OptionsReader()
 		logger.Warn(
@@ -153,7 +153,7 @@ func onConnectionLost(logger simaqian.Logger) func(mqtt.Client, error) {
 	}
 }
 
-func onReconnection(fun func() *Client, logger simaqian.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
+func onReconnection(fun func() *Client, logger logging.Logger) func(mqtt.Client, *mqtt.ClientOptions) {
 	return func(mqtt mqtt.Client, options *mqtt.ClientOptions) {
 		logger.Warn(
 			`MQTT自动重连中`,
