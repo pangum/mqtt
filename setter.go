@@ -7,7 +7,7 @@ import (
 )
 
 func setString(setter func(value string) *mqtt.ClientOptions, value string, null string) {
-	if "" != value {
+	if `` != value {
 		setter(value)
 	} else {
 		setter(null)
