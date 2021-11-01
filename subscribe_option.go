@@ -1,7 +1,7 @@
 package mqtt
 
 import (
-	`github.com/pangum/pangu-mqtt/core`
+	`github.com/pangum/mqtt/core`
 )
 
 type (
