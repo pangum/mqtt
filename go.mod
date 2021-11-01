@@ -1,4 +1,4 @@
-module github.com/storezhang/pangu-mqtt
+module github.com/pangum/mqtt
 
 go 1.16
 
