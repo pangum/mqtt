@@ -1,7 +1,7 @@
 package webhook
 
 import (
-	`github.com/storezhang/pangu-mqtt/core`
+	`github.com/pangum/pangu-mqtt/core`
 )
 
 // Subscribe 收到订阅报文后，执行client.check_acl鉴权前

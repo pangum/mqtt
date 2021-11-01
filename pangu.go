@@ -1,7 +1,7 @@
 package mqtt
 
 import (
-	`github.com/storezhang/pangu`
+	`github.com/pangum/pangu`
 )
 
 func init() {

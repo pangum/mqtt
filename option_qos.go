@@ -1,7 +1,7 @@
 package mqtt
 
 import (
-	`github.com/storezhang/pangu-mqtt/core`
+	`github.com/pangum/pangu-mqtt/core`
 )
 
 var (

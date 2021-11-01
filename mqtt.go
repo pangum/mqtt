@@ -4,9 +4,9 @@ import (
 	`crypto/tls`
 	`net/url`
 
+	`github.com/pangum/pangu`
 	`github.com/storezhang/gox`
 	`github.com/storezhang/gox/field`
-	`github.com/storezhang/pangu`
 )
 
 func newMqtt(config *pangu.Config, logger glog.Logger) (client *Client, err error) {

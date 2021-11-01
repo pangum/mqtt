@@ -3,7 +3,7 @@ package mqtt
 import (
 	`time`
 
-	`github.com/storezhang/pangu-mqtt/core`
+	`github.com/pangum/pangu-mqtt/core`
 )
 
 type (
