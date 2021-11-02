@@ -4,6 +4,7 @@ import (
 	`sync`
 
 	`github.com/eclipse/paho.mqtt.golang`
+	`github.com/pangum/logging`
 )
 
 // Client MQTT客户端封装
@@ -14,13 +15,15 @@ type Client struct {
 	serializerCache map[string]serializer
 	subscriptions   []subscription
 
-	mutex sync.Mutex
+	mutex  sync.Mutex
+	logger *logging.Logger
 }
 
 func newClient(
 	optionsCache map[string]*mqtt.ClientOptions,
 	brokerCache map[string]broker,
 	serializerCache map[string]serializer,
+	logger *logging.Logger,
 ) *Client {
 	return &Client{
 		clientCache:     make(map[string]mqtt.Client),
@@ -28,6 +31,8 @@ func newClient(
 		brokerCache:     brokerCache,
 		serializerCache: serializerCache,
 		subscriptions:   make([]subscription, 0),
+
+		logger: logger,
 	}
 }
 

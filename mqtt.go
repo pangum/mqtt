@@ -109,7 +109,7 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 		brokerCache[_server.Label] = _server.Broker
 		serializerCache[_server.Label] = _server.Options.Serializer
 	}
-	client = newClient(optionsCache, brokerCache, serializerCache)
+	client = newClient(optionsCache, brokerCache, serializerCache, logger)
 
 	return
 }

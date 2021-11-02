@@ -7,6 +7,7 @@ import (
 	`time`
 
 	`github.com/eclipse/paho.mqtt.golang`
+	`github.com/storezhang/gox/field`
 	`github.com/vmihailenco/msgpack/v5`
 	`google.golang.org/protobuf/proto`
 )
@@ -44,8 +45,15 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 
 	// 使用MQTT内置的延迟功能实现延迟发送
 	if 0 != _options.delay {
-		topic = fmt.Sprintf("$delayed/%d/%s", _options.delay/time.Second, topic)
+		topic = fmt.Sprintf(`$delayed/%d/%s`, _options.delay/time.Second, topic)
 	}
+	c.logger.Info(
+		`发送消息`,
+		field.String(`topic`, topic),
+		field.Int(`size`, len(payload.([]byte))),
+		field.Bool(`retained`, _options.retained),
+		field.Int8(`qos`, int8(_options.qos)),
+	)
 	token := client.Publish(topic, byte(_options.qos), _options.retained, payload)
 	go func() {
 		<-token.Done()
