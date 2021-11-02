@@ -1,7 +1,7 @@
 package mqtt
 
 import (
-	`sync`
+	`time`
 
 	`github.com/eclipse/paho.mqtt.golang`
 	`github.com/pangum/logging`
@@ -15,8 +15,9 @@ type Client struct {
 	serializerCache map[string]serializer
 	subscriptions   []subscription
 
-	mutex  sync.Mutex
-	logger *logging.Logger
+	logger   *logging.Logger
+	delayMin time.Duration
+	delayMax time.Duration
 }
 
 func newClient(
@@ -32,7 +33,9 @@ func newClient(
 		serializerCache: serializerCache,
 		subscriptions:   make([]subscription, 0),
 
-		logger: logger,
+		logger:   logger,
+		delayMin: time.Second,
+		delayMax: 4294967 * time.Second,
 	}
 }
 

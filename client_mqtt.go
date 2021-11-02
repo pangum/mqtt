@@ -45,6 +45,11 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 
 	// 使用MQTT内置的延迟功能实现延迟发送
 	if 0 != _options.delay {
+		if _options.delay <= c.delayMin {
+			_options.delay = c.delayMin
+		} else if _options.delay >= c.delayMax {
+			_options.delay = c.delayMax
+		}
 		topic = fmt.Sprintf(`$delayed/%d/%s`, _options.delay/time.Second, topic)
 	}
 	c.logger.Info(
