@@ -21,6 +21,11 @@ type (
 	}
 )
 
+// PublishOptions 因为publishOption没有暴露，在外面不方便处理，特意留一个组装各种选项的方法
+func PublishOptions(opts ...publishOption) []publishOption {
+	return opts
+}
+
 func defaultPublishOptions() *publishOptions {
 	return &publishOptions{
 		options: defaultOptions(),
