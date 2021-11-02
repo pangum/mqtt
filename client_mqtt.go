@@ -52,7 +52,7 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 		}
 		topic = fmt.Sprintf(`$delayed/%d/%s`, _options.delay/time.Second, topic)
 	}
-	c.logger.Info(
+	c.logger.Debug(
 		`发送消息`,
 		field.String(`topic`, topic),
 		field.Int(`size`, len(payload.([]byte))),
