@@ -22,7 +22,6 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 	}
 
 	mqttConfig := _config.Mqtt
-
 	// 加载默认连接
 	brokerCache := make(map[string]broker)
 	optionsCache := make(map[string]*mqtt.ClientOptions)
