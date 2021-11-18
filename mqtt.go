@@ -17,7 +17,7 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 	}
 
 	_config := new(panguConfig)
-	if err = config.Load(_config); nil != err {
+	if err = _config.load(config); nil != err {
 		return
 	}
 
@@ -32,7 +32,7 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 		_defaultOptions.SetUsername(mqttConfig.Options.Username)
 		_defaultOptions.SetPassword(mqttConfig.Options.Password)
 		_defaultOptions.SetKeepAlive(mqttConfig.Options.Keepalive)
-		_defaultOptions.SetClientID(mqttConfig.Options.clientid())
+		_defaultOptions.SetClientID(mqttConfig.Options.Clientid)
 		if mqttConfig.Options.Will.Enabled {
 			_defaultOptions.SetWill(
 				mqttConfig.Options.Will.Topic,
@@ -76,7 +76,7 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 		setString(serverOptions.SetUsername, _server.Options.Username, mqttConfig.Options.Username)
 		setString(serverOptions.SetPassword, _server.Options.Password, mqttConfig.Options.Password)
 		setDuration(serverOptions.SetKeepAlive, _server.Options.Keepalive, mqttConfig.Options.Keepalive)
-		setString(serverOptions.SetClientID, _server.Options.clientid(), mqttConfig.Options.clientid())
+		setString(serverOptions.SetClientID, _server.Options.Clientid, mqttConfig.Options.Clientid)
 		if _server.Options.Will.Enabled {
 			serverOptions.SetWill(
 				_server.Options.Will.Topic,
