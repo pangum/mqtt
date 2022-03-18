@@ -4,7 +4,12 @@ import (
 	`time`
 )
 
-var _ publishOption = (*optionDelay)(nil)
+var (
+	_               = Delay
+	_               = Time
+	_               = Timestamp
+	_ publishOption = (*optionDelay)(nil)
+)
 
 type optionDelay struct {
 	delay time.Duration

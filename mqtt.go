@@ -5,10 +5,10 @@ import (
 	`net/url`
 
 	`github.com/eclipse/paho.mqtt.golang`
+	`github.com/goexl/gox`
+	`github.com/goexl/gox/field`
 	`github.com/pangum/logging`
 	`github.com/pangum/pangu`
-	`github.com/storezhang/gox`
-	`github.com/storezhang/gox/field`
 )
 
 func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err error) {
@@ -17,7 +17,7 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 	}
 
 	_config := new(panguConfig)
-	if err = _config.load(config); nil != err {
+	if err = config.Load(_config); nil != err {
 		return
 	}
 

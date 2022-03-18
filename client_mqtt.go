@@ -1,15 +1,11 @@
 package mqtt
 
 import (
-	`encoding/json`
-	`encoding/xml`
 	`fmt`
 	`time`
 
 	`github.com/eclipse/paho.mqtt.golang`
-	`github.com/storezhang/gox/field`
-	`github.com/vmihailenco/msgpack/v5`
-	`google.golang.org/protobuf/proto`
+	`github.com/goexl/gox/field`
 )
 
 func (c *Client) Publish(topic string, payload interface{}, opts ...publishOption) (err error) {
@@ -25,21 +21,7 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 
 	// 序列化数据
 	_serializer := c.getSerializer(_options.label, _options.serializer)
-	switch _serializer {
-	case serializerProto:
-		payload, err = proto.Marshal(payload.(proto.Message))
-	case serializerJson:
-		payload, err = json.Marshal(payload)
-	case serializerXml:
-		payload, err = xml.Marshal(payload)
-	case serializerMsgpack:
-		payload, err = msgpack.Marshal(payload)
-	case serializerBytes:
-		payload = payload.([]byte)
-	case serializerString:
-		payload = payload.(string)
-	}
-	if nil != err {
+	if payload, err = _serializer.Marshal(payload); nil != err {
 		return
 	}
 
@@ -130,7 +112,7 @@ func (c *Client) Disconnect(duration time.Duration, opts ...option) (err error) 
 }
 
 func (c *Client) consume(handler handler, _ mqtt.Client, message mqtt.Message) {
-	if err := handler.OnMessage(&Message{Message: message}); nil == err {
+	if err := handler.OnMessage(&Message{original: message}); nil == err {
 		message.Ack()
 	}
 }

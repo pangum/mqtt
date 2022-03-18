@@ -10,7 +10,7 @@ type mqttOptions struct {
 	// 密码
 	Password string `json:"password" yaml:"password" xml:"password" toml:"password"`
 	// 序列化器，默认使用Msgpack做序列化
-	Serializer serializer `default:"msgpack" json:"serializer" yaml:"serializer" xml:"serializer" toml:"serializer" validate:"oneof=json msgpack proto xml"`
+	Serializer serializer `default:"proto" json:"serializer" yaml:"serializer" xml:"serializer" toml:"serializer" validate:"oneof=json msgpack proto xml"`
 	// 保活时间
 	Keepalive time.Duration `default:"60s" json:"keepalive" yaml:"keepalive" xml:"keepalive" toml:"keepalive"`
 	// 客户端编号
