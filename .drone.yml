@@ -1,0 +1,34 @@
+kind: pipeline
+type: docker
+name: MQTT
+
+
+clone:
+    disable: true
+
+
+steps:
+    -   name: 代码
+        image: dronestock/git
+
+    -   name: 编译
+        image: pangum/drone
+        volumes:
+            -   name: go
+                path: /var/lib/go
+        settings:
+            test:
+                enabled: false
+            compress:
+                enabled: false
+
+    -   name: 文档
+        image: dronestock/node
+        settings:
+            folder: doc
+
+
+volumes:
+    -   name: go
+        host:
+            path: /var/lib/cache/go

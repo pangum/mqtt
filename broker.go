@@ -22,6 +22,7 @@ type broker struct {
 	Http http `json:"http" yaml:"http" xml:"http" toml:"http" validate:"structonly"`
 
 	// 连接最佳协议
+	// nolint:lll
 	Orders []protocol `default:"['mqtts','mqtt','wss','ws']" json:"orders" yaml:"orders" xml:"orders" toml:"orders" validate:"required,dive,oneof=mqtts mqtt wss ws"`
 }
 
