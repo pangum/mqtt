@@ -52,21 +52,21 @@ func newBootstrap(application *pangu.Application) pangu.Bootstrap {
 package rest
 
 import (
-	`github.com/pangum/pangu`
+    `github.com/pangum/pangu`
 )
 
-type Server struct {}
+type Server struct{}
 
-func newServer(/* 如果有依赖，可以在这里增加依赖：api *Api */) *Server {
-	return new(Server)
+func newServer( /* 如果有依赖，可以在这里增加依赖：api *Api */) *Server {
+    return new(Server)
 }
 
 func init() {
-	pangu.New().Musts(
-		newServer,
-		// 其它依赖
-		// ...
-	)
+    pangu.New().Musts(
+        newServer,
+        // 其它依赖
+        // ...
+    )
 }
 ```
 

@@ -4,31 +4,31 @@ name: MQTT
 
 
 clone:
-    disable: true
+  disable: true
 
 
 steps:
-    -   name: 代码
-        image: dronestock/git
+  - name: 代码
+    image: dronestock/git
 
-    -   name: 编译
-        image: pangum/drone
-        volumes:
-            -   name: go
-                path: /var/lib/go
-        settings:
-            test:
-                enabled: false
-            compress:
-                enabled: false
+  - name: 编译
+    image: pangum/drone
+    volumes:
+      - name: go
+        path: /var/lib/go
+    settings:
+      test:
+        enabled: false
+      compress:
+        enabled: false
 
-    -   name: 文档
-        image: dronestock/node
-        settings:
-            folder: doc
+  - name: 文档
+    image: dronestock/node
+    settings:
+      folder: doc
 
 
 volumes:
-    -   name: go
-        host:
-            path: /var/lib/cache/go
+  - name: go
+    host:
+      path: /var/lib/cache/go
