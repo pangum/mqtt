@@ -4,6 +4,7 @@ import (
 	`time`
 
 	`github.com/eclipse/paho.mqtt.golang`
+	`github.com/goexl/gox`
 	`github.com/pangum/logging`
 )
 
@@ -18,6 +19,8 @@ type Client struct {
 	logger   *logging.Logger
 	delayMin time.Duration
 	delayMax time.Duration
+
+	_ gox.CannotCopy
 }
 
 func newClient(
