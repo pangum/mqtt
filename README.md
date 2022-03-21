@@ -14,13 +14,13 @@
 
 ```yaml
 mqtt:
-    brokers:
-        - tcp://192.168.95.102:31883
-        - ws://192.168.95.102:38083/mqtt
-    options:
-        username: test_username
-        password: test_password
-        clientid: ${HOSTNAME}
+  brokers:
+    - tcp://192.168.95.102:31883
+    - ws://192.168.95.102:38083
+  options:
+    username: test_username
+    password: test_password
+    clientid: ${HOSTNAME}
 ```
 
 `依赖项`的代码如下
@@ -29,21 +29,21 @@ mqtt:
 package main
 
 import (
-    `github.com/pangum/mqtt`
+  `github.com/pangum/mqtt`
 )
 
 type agent struct {
-    client *mqtt.Client
+  client *mqtt.Client
 }
 
 func newAgent(client *mqtt.Client) *agent {
-    return &agent{
-        client: client,
-    }
+  return &agent{
+    client: client,
+  }
 }
 
 func (a *agent) subscribe() error {
-    return a.mqtt.Subscribe(`topic`, opts...)
+  return a.client.Subscribe(`topic`, opts...)
 }
 ```
 
