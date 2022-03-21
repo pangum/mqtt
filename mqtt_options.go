@@ -11,6 +11,15 @@ type mqttOptions struct {
 	Password string `json:"password" yaml:"password" xml:"password" toml:"password"`
 	// 序列化器，默认使用Msgpack做序列化
 	Serializer serializer `default:"proto" json:"serializer" yaml:"serializer" xml:"serializer" toml:"serializer" validate:"oneof=json msgpack proto xml"`
+	// 是否处理默认值
+	Default bool `default:"true" json:"default" yaml:"default" xml:"default" toml:"default"`
+	// 是否处理默认值
+	Defaults bool `default:"true" json:"defaults" yaml:"defaults" xml:"defaults" toml:"defaults"`
+	// 是否进行数据验证
+	Validate bool `default:"true" json:"validate" yaml:"validate" xml:"validate" toml:"validate"`
+	// 是否进行数据验证
+	Validates bool `default:"true" json:"validates" yaml:"validates" xml:"validates" toml:"validates"`
+
 	// 保活时间
 	Keepalive time.Duration `default:"60s" json:"keepalive" yaml:"keepalive" xml:"keepalive" toml:"keepalive"`
 	// 客户端编号

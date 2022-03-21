@@ -3,40 +3,28 @@ package mqtt
 import (
 	`github.com/eclipse/paho.mqtt.golang`
 	`github.com/goexl/gox`
-	`github.com/goexl/mengpo`
-	`github.com/goexl/xiren`
 )
 
 // Message 消息封装
 type Message struct {
-	original   mqtt.Message
-	serializer serializer
+	original mqtt.Message
+	options  *messageOptions
 
 	_ gox.CannotCopy
 }
 
-func (m *Message) Fill(value interface{}, opts ...fillOption) (err error) {
-	_options := defaultFillOptions()
+func newMessage(original mqtt.Message, options *messageOptions) *Message {
+	return &Message{
+		original: original,
+		options:  options,
+	}
+}
+
+func (m *Message) Fill(value interface{}, opts ...messageOption) (err error) {
 	for _, opt := range opts {
-		opt.applyFill(_options)
+		opt.applyMessage(m.options)
 	}
-
-	if err = m.serializer.Unmarshal(m.original.Payload(), value); nil != err {
-		return
-	}
-
-	// 加载默认值
-	if _options.defaults {
-		err = mengpo.Set(value)
-	}
-	if nil != err {
-		return
-	}
-
-	// 数据验证
-	if _options.validates {
-		err = xiren.Struct(value)
-	}
+	err = m.options.unmarshal(m.original.Payload(), value)
 
 	return
 }

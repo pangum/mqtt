@@ -10,11 +10,11 @@ import (
 
 // Client MQTT客户端封装
 type Client struct {
-	clientCache     map[string]mqtt.Client
-	optionsCache    map[string]*mqtt.ClientOptions
-	brokerCache     map[string]broker
-	serializerCache map[string]serializer
-	subscriptions   []subscription
+	clientCache        map[string]mqtt.Client
+	clientOptionsCache map[string]*mqtt.ClientOptions
+	brokerCache        map[string]broker
+	messageCache       map[string]*messageOptions
+	subscriptions      []subscription
 
 	logger   *logging.Logger
 	delayMin time.Duration
@@ -24,17 +24,17 @@ type Client struct {
 }
 
 func newClient(
-	optionsCache map[string]*mqtt.ClientOptions,
+	mqttOptionsCache map[string]*mqtt.ClientOptions,
 	brokerCache map[string]broker,
-	serializerCache map[string]serializer,
+	messageCache map[string]*messageOptions,
 	logger *logging.Logger,
 ) *Client {
 	return &Client{
-		clientCache:     make(map[string]mqtt.Client),
-		optionsCache:    optionsCache,
-		brokerCache:     brokerCache,
-		serializerCache: serializerCache,
-		subscriptions:   make([]subscription, 0),
+		clientCache:        make(map[string]mqtt.Client),
+		clientOptionsCache: mqttOptionsCache,
+		brokerCache:        brokerCache,
+		messageCache:       messageCache,
+		subscriptions:      make([]subscription, 0),
 
 		logger:   logger,
 		delayMin: time.Second,
@@ -57,7 +57,7 @@ func (c *Client) getClient(label string) (client mqtt.Client, err error) {
 		return
 	}
 
-	client = mqtt.NewClient(c.optionsCache[label])
+	client = mqtt.NewClient(c.clientOptionsCache[label])
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		err = token.Error()
 	}
@@ -66,11 +66,11 @@ func (c *Client) getClient(label string) (client mqtt.Client, err error) {
 	return
 }
 
-func (c *Client) getSerializer(label string, original serializer) (serializer serializer) {
-	if serializerUnknown == original {
-		serializer = c.serializerCache[label]
+func (c *Client) getMessageOptions(label string) (options *messageOptions) {
+	if cached, ok := c.messageCache[label]; ok {
+		options = cached
 	} else {
-		serializer = original
+		options = defaultMessageOptions()
 	}
 
 	return

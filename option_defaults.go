@@ -1,9 +1,11 @@
 package mqtt
 
 var (
-	_            = DisableDefault
-	_            = DisableDefaults
-	_ fillOption = (*optionDefaults)(nil)
+	_                 = DisableDefault
+	_                 = DisableDefaults
+	_ publishOption   = (*optionDefaults)(nil)
+	_ subscribeOption = (*optionDefaults)(nil)
+	_ messageOption   = (*optionDefaults)(nil)
 )
 
 type optionDefaults struct {
@@ -22,6 +24,14 @@ func DisableDefaults() *optionDefaults {
 	}
 }
 
-func (d *optionDefaults) applyFill(options *fillOptions) {
+func (d *optionDefaults) applyPublish(options *publishOptions) {
+	options.defaults = d.defaults
+}
+
+func (d *optionDefaults) applySubscribe(options *subscribeOptions) {
+	options.defaults = d.defaults
+}
+
+func (d *optionDefaults) applyMessage(options *messageOptions) {
 	options.defaults = d.defaults
 }

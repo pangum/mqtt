@@ -20,8 +20,8 @@ func (c *Client) Publish(topic string, payload interface{}, opts ...publishOptio
 	}
 
 	// 序列化数据
-	_serializer := c.getSerializer(_options.label, _options.serializer)
-	if payload, err = _serializer.Marshal(payload); nil != err {
+	_messageOptions := c.getMessageOptions(_options.label)
+	if payload, err = _messageOptions.marshal(payload); nil != err {
 		return
 	}
 
@@ -60,8 +60,9 @@ func (c *Client) Subscribe(topic string, handler handler, opts ...subscribeOptio
 		return
 	}
 
+	_messageOptions := c.getMessageOptions(_options.label)
 	token := client.Subscribe(topic, byte(_options.qos), func(client mqtt.Client, message mqtt.Message) {
-		go c.consume(handler, client, message)
+		go c.consume(handler, client, message, _messageOptions)
 	})
 	go func() {
 		token.Wait()
@@ -111,8 +112,9 @@ func (c *Client) Disconnect(duration time.Duration, opts ...option) (err error) 
 	return
 }
 
-func (c *Client) consume(handler handler, _ mqtt.Client, message mqtt.Message) {
-	if err := handler.OnMessage(&Message{original: message}); nil == err {
-		message.Ack()
+func (c *Client) consume(handler handler, _ mqtt.Client, original mqtt.Message, options *messageOptions) {
+	message := newMessage(original, options)
+	if err := handler.OnMessage(message); nil == err {
+		original.Ack()
 	}
 }

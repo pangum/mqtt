@@ -24,8 +24,8 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 	mqttConfig := _config.Mqtt
 	// 加载默认连接
 	brokerCache := make(map[string]broker)
-	optionsCache := make(map[string]*mqtt.ClientOptions)
-	serializerCache := make(map[string]serializer)
+	mqttOptionsCache := make(map[string]*mqtt.ClientOptions)
+	optionsCache := make(map[string]*messageOptions)
 	if mqttConfig.Broker.validate() {
 		_defaultOptions := mqtt.NewClientOptions()
 		_defaultOptions.AddBroker(mqttConfig.Broker.best())
@@ -60,9 +60,9 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 		_defaultOptions.OnConnect = onConnect(logger)
 		_defaultOptions.OnConnectAttempt = onConnectAttempt(logger)
 
-		optionsCache[defaultLabel] = _defaultOptions
+		mqttOptionsCache[defaultLabel] = _defaultOptions
 		brokerCache[defaultLabel] = mqttConfig.Broker
-		serializerCache[defaultLabel] = mqttConfig.Options.Serializer
+		optionsCache[defaultLabel] = newMessageOptions(mqttConfig.Options)
 	}
 
 	// 加载带标签的服务器
@@ -104,11 +104,11 @@ func newMqtt(config *pangu.Config, logger *logging.Logger) (client *Client, err 
 		serverOptions.OnConnect = onConnect(logger)
 		serverOptions.OnConnectAttempt = onConnectAttempt(logger)
 
-		optionsCache[_server.Label] = serverOptions
+		mqttOptionsCache[_server.Label] = serverOptions
 		brokerCache[_server.Label] = _server.Broker
-		serializerCache[_server.Label] = _server.Options.Serializer
+		optionsCache[_server.Label] = newMessageOptions(_server.Options)
 	}
-	client = newClient(optionsCache, brokerCache, serializerCache, logger)
+	client = newClient(mqttOptionsCache, brokerCache, optionsCache, logger)
 
 	return
 }

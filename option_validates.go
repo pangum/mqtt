@@ -1,9 +1,11 @@
 package mqtt
 
 var (
-	_            = DisableValidate
-	_            = DisableValidates
-	_ fillOption = (*optionValidate)(nil)
+	_                 = DisableValidate
+	_                 = DisableValidates
+	_ publishOption   = (*optionValidate)(nil)
+	_ subscribeOption = (*optionValidate)(nil)
+	_ messageOption   = (*optionValidate)(nil)
 )
 
 type optionValidate struct {
@@ -22,6 +24,14 @@ func DisableValidates() *optionValidate {
 	}
 }
 
-func (v *optionValidate) applyFill(options *fillOptions) {
+func (v *optionValidate) applyPublish(options *publishOptions) {
+	options.validates = v.validates
+}
+
+func (v *optionValidate) applySubscribe(options *subscribeOptions) {
+	options.validates = v.validates
+}
+
+func (v *optionValidate) applyMessage(options *messageOptions) {
 	options.validates = v.validates
 }

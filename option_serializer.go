@@ -1,6 +1,16 @@
 package mqtt
 
-var _ publishOption = (*optionSerializer)(nil)
+var (
+	_                 = Proto
+	_                 = JSON
+	_                 = XML
+	_                 = Msgpack
+	_                 = Bytes
+	_                 = String
+	_ publishOption   = (*optionSerializer)(nil)
+	_ subscribeOption = (*optionSerializer)(nil)
+	_ messageOption   = (*optionSerializer)(nil)
+)
 
 type optionSerializer struct {
 	serializer serializer
@@ -49,5 +59,13 @@ func String() *optionSerializer {
 }
 
 func (f *optionSerializer) applyPublish(options *publishOptions) {
+	options.serializer = f.serializer
+}
+
+func (f *optionSerializer) applySubscribe(options *subscribeOptions) {
+	options.serializer = f.serializer
+}
+
+func (f *optionSerializer) applyMessage(options *messageOptions) {
 	options.serializer = f.serializer
 }

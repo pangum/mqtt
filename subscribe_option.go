@@ -11,19 +11,19 @@ type (
 
 	subscribeOptions struct {
 		*options
+		*messageOptions
 
-		format string
-		qos    core.Qos
-		save   bool
+		qos  core.Qos
+		save bool
 	}
 )
 
 func defaultSubscribeOptions() *subscribeOptions {
 	return &subscribeOptions{
-		options: defaultOptions(),
+		options:        defaultOptions(),
+		messageOptions: defaultMessageOptions(),
 
-		format: `proto`,
-		qos:    core.Qos1,
-		save:   true,
+		qos:  core.Qos1,
+		save: true,
 	}
 }
