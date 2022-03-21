@@ -14,7 +14,7 @@
 
 ```yaml
 mqtt:
-  brokers:
+  broker:
     - tcp://192.168.95.102:31883
     - ws://192.168.95.102:38083
   options:
