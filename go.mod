@@ -10,7 +10,7 @@ require (
 	github.com/pangum/logging v0.1.4
 	github.com/pangum/pangu v0.1.2
 	github.com/vmihailenco/msgpack/v5 v5.3.5
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
