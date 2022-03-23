@@ -1,7 +1,7 @@
 package mqtt
 
 type config struct {
-	// 地址
+	// 服务器
 	Broker broker `json:"broker" yaml:"broker" xml:"broker" toml:"broker" validate:"omitempty,required_without=Brokers"`
 	// 服务器列表
 	Brokers []labeledServer `json:"brokers" yaml:"brokers" xml:"brokers" toml:"brokers" validate:"omitempty,required_without=Broker,dive"`
