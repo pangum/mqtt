@@ -5,5 +5,5 @@ import (
 )
 
 func init() {
-	pangu.New().Musts(newMqtt)
+	pangu.New().Dependence(newMqtt)
 }

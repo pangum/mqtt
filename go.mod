@@ -4,11 +4,11 @@ go 1.18
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.3.5
-	github.com/goexl/gox v0.0.4
+	github.com/goexl/gox v0.0.5
 	github.com/goexl/mengpo v0.1.6
 	github.com/goexl/xiren v0.0.2
 	github.com/pangum/logging v0.1.4
-	github.com/pangum/pangu v0.1.1
+	github.com/pangum/pangu v0.1.2
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	google.golang.org/protobuf v1.27.1
 )
@@ -22,7 +22,7 @@ require (
 	github.com/go-playground/validator/v10 v10.10.1 // indirect
 	github.com/goexl/baozheng v0.0.1 // indirect
 	github.com/goexl/env v0.0.1 // indirect
-	github.com/goexl/exc v0.0.2 // indirect
+	github.com/goexl/exc v0.0.4 // indirect
 	github.com/goexl/gfx v0.0.5 // indirect
 	github.com/goexl/simaqian v0.1.3 // indirect
 	github.com/google/uuid v1.3.0 // indirect
