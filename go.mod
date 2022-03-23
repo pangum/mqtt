@@ -7,10 +7,10 @@ require (
 	github.com/goexl/gox v0.0.5
 	github.com/goexl/mengpo v0.1.6
 	github.com/goexl/xiren v0.0.2
-	github.com/pangum/logging v0.1.4
+	github.com/pangum/logging v0.1.5
 	github.com/pangum/pangu v0.1.2
 	github.com/vmihailenco/msgpack/v5 v5.3.5
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	github.com/goexl/baozheng v0.0.1 // indirect
 	github.com/goexl/env v0.0.1 // indirect
 	github.com/goexl/exc v0.0.4 // indirect
-	github.com/goexl/gfx v0.0.5 // indirect
+	github.com/goexl/gfx v0.0.8 // indirect
 	github.com/goexl/simaqian v0.1.3 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
@@ -31,7 +31,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/rs/xid v1.3.0 // indirect
+	github.com/rs/xid v1.4.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/storezhang/dig v0.0.1 // indirect
@@ -40,7 +40,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
-	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
+	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/sys v0.0.0-20220319134239-a9b59b0215f8 // indirect
 	golang.org/x/text v0.3.7 // indirect
