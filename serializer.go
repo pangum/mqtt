@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	serializerUnknown serializer = ``
 	serializerJson    serializer = `json`
 	serializerProto   serializer = `proto`
 	serializerMsgpack serializer = `msgpack`
