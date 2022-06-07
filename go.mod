@@ -6,7 +6,7 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.4.1
 	github.com/goexl/gox v0.0.5
 	github.com/goexl/mengpo v0.1.6
-	github.com/goexl/xiren v0.0.2
+	github.com/goexl/xiren v0.0.3
 	github.com/pangum/logging v0.1.5
 	github.com/pangum/pangu v0.1.2
 	github.com/vmihailenco/msgpack/v5 v5.3.5
