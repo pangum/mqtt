@@ -3,7 +3,7 @@ module github.com/pangum/mqtt
 go 1.18
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.4.1
+	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/goexl/gox v0.0.9
 	github.com/goexl/mengpo v0.2.0
 	github.com/goexl/xiren v0.0.3
