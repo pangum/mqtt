@@ -9,7 +9,7 @@ require (
 	github.com/goexl/xiren v0.0.5
 	github.com/pangum/logging v0.1.9
 	github.com/pangum/pangu v0.3.0
-	github.com/vmihailenco/msgpack/v5 v5.3.5
+	github.com/vmihailenco/msgpack/v5 v5.4.0
 	google.golang.org/protobuf v1.30.0
 )
 
