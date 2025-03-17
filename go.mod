@@ -1,11 +1,12 @@
 module github.com/pangum/mqtt
 
 go 1.18
+toolchain go1.24.1
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.0
-	github.com/goexl/gox v0.1.6
-	github.com/goexl/mengpo v0.2.4
+	github.com/goexl/gox v0.5.2
+	github.com/goexl/mengpo v0.2.6
 	github.com/goexl/xiren v0.0.5
 	github.com/pangum/logging v0.1.9
 	github.com/pangum/pangu v0.3.0
@@ -23,14 +24,15 @@ require (
 	github.com/goexl/baozheng v0.0.1 // indirect
 	github.com/goexl/env v0.0.2 // indirect
 	github.com/goexl/exc v0.0.5 // indirect
+	github.com/goexl/exception v0.0.1 // indirect
 	github.com/goexl/gfx v0.1.6 // indirect
 	github.com/goexl/simaqian v0.2.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/rs/xid v1.4.0 // indirect
+	github.com/rs/xid v1.5.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/storezhang/dig v0.0.1 // indirect
