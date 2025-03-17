@@ -1,10 +1,11 @@
 module github.com/pangum/mqtt
 
 go 1.18
+toolchain go1.24.1
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.0
-	github.com/goexl/gox v0.1.6
+	github.com/goexl/gox v1.9.2
 	github.com/goexl/mengpo v0.2.4
 	github.com/goexl/xiren v0.0.5
 	github.com/pangum/logging v0.1.9
