@@ -1,12 +1,13 @@
 module github.com/pangum/mqtt
 
 go 1.18
+toolchain go1.24.1
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.0
-	github.com/goexl/gox v0.1.6
+	github.com/goexl/gox v1.8.8
 	github.com/goexl/mengpo v0.2.4
-	github.com/goexl/xiren v0.0.5
+	github.com/goexl/xiren v0.0.8
 	github.com/pangum/logging v0.1.9
 	github.com/pangum/pangu v0.3.0
 	github.com/vmihailenco/msgpack/v5 v5.4.1
@@ -17,17 +18,19 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/drone/envsubst v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/go-playground/locales v0.14.0 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.1 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.22.1 // indirect
 	github.com/goexl/baozheng v0.0.1 // indirect
 	github.com/goexl/env v0.0.2 // indirect
 	github.com/goexl/exc v0.0.5 // indirect
+	github.com/goexl/exception v0.0.1 // indirect
 	github.com/goexl/gfx v0.1.6 // indirect
 	github.com/goexl/simaqian v0.2.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/xid v1.4.0 // indirect
