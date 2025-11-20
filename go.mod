@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.1
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.5.0
+	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/goexl/gox v1.9.2
 	github.com/goexl/mengpo v0.2.6
 	github.com/goexl/xiren v0.0.8
