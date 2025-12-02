@@ -1,13 +1,11 @@
 module github.com/pangum/mqtt
 
-go 1.24.0
-
-toolchain go1.24.1
+go 1.25
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/goexl/gox v1.9.2
-	github.com/goexl/mengpo v0.3.1
+	github.com/goexl/mengpo v0.3.2
 	github.com/goexl/xiren v0.0.9
 	github.com/pangum/logging v0.1.9
 	github.com/pangum/pangu v1.5.9
@@ -25,7 +23,7 @@ require (
 	github.com/go-playground/validator/v10 v10.26.0 // indirect
 	github.com/goexl/baozheng v0.0.1 // indirect
 	github.com/goexl/env v0.0.2 // indirect
-	github.com/goexl/exception v0.0.3 // indirect
+	github.com/goexl/exception v0.0.4 // indirect
 	github.com/goexl/gfx v0.2.5 // indirect
 	github.com/goexl/log v0.0.9 // indirect
 	github.com/goexl/simaqian v0.2.1 // indirect
